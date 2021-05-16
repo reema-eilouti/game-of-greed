@@ -114,17 +114,46 @@ class GameLogic():
 
         return score
 
-           
-
-
 
     @staticmethod
-    def roll_dice(num_dice):
+    def roll_dice(num_dice:int)->tuple:
+        """   
+    Add roll_dice static method to GameLogic class.
+    The input to roll_dice is an integer between 1 and 6.
+    The output of roll_dice is a tuple with random values between 1 and 6.
+    The length of tuple must match the argument given to roll_dice method.
+        """
         return tuple(randint(1,6) for _ in range(0,num_dice))
-        # or
-        # return tuple(sample(range(1, 6 + 1), num_dice))
+
+
+class Banker:
+    def __init__(self):
+        self.shelved = 0
+        self.balance = 0
+    def shelf(self,points:int):
+        """        
+    Input to shelf is the amount of points (integer) to add to shelf.
+    shelf should temporarily store unbanked points.
+        """
+        self.shelved += points
+
+    def bank(self)->int:
+        """
+    bank should add any points on the shelf to total and reset shelf to 0.
+    bank output should be the amount of points added to total from shelf.
+        """
+        added_points = self.shelved
+        self.balance += added_points
+        self.shelved = 0
+        return added_points
+
+    def clear_shelf(self):
+        """
+        clear_shelf should remove all unbanked points.
+        """
+        self.shelved = 0
 
 
 test = GameLogic()
 
-print(test.calculate_score((2, 2, 3, 3, 4, 6)))
+print(test.roll_dice(5))
