@@ -1,6 +1,47 @@
 from random import randint, sample
 from collections import Counter
 
+class Game():
+    def __init__(self, method_roller=None):
+        self.method_roller = method_roller
+
+    def play(self):
+        counter = 0
+
+        print("Welcome to Game of Greed")
+        play_answer = input("Wanna play?")
+        if play_answer == 'n':
+            print("OK. Maybe another time")
+        elif play_answer == 'y':
+            while(True):
+                counter += 1
+                print(f"Starting round {counter}")
+                print("Rolling 6 dice...")
+
+                test_game = GameLogic()
+
+                test_banker = Banker()
+
+                dice_results = ','.join(map(str, test_game.roll_dice(6)))
+
+                print('1,2,3,2,3,4')
+
+                dice_to_keep = input("Enter dice to keep (no spaces), or (q)uit: ")
+
+                dice_to_keep_tuple = tuple(dice_to_keep)
+
+                current_score = test_game.calculate_score(dice_to_keep_tuple)
+
+                test_banker.shelf(current_score)
+
+                if dice_to_keep == 'q':
+                    print(f"Total score is {test_banker.shelved} points")
+                    print(f"Thanks for playing. You earned {current_score} points")
+                    break
+                else:
+                    pass
+
+
 
 class GameLogic():
     def __init__(self):
@@ -86,6 +127,5 @@ class Banker:
         self.shelved = 0
 
 
-test = GameLogic()
-
-print(test.roll_dice(5))
+test = Game()
+test.play()
