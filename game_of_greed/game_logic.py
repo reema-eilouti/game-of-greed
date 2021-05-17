@@ -3,7 +3,7 @@ from collections import Counter
 
 class Game():
     def __init__(self, method_roller=None):
-        self.method_roller = method_roller
+        self.method_roller = method_roller or GameLogic.roll_dice
 
     def play(self):
         counter = 0
@@ -13,33 +13,42 @@ class Game():
         if play_answer == 'n':
             print("OK. Maybe another time")
         elif play_answer == 'y':
+            test_game = GameLogic()
+
+            test_banker = Banker()
             while(True):
                 counter += 1
                 print(f"Starting round {counter}")
                 print("Rolling 6 dice...")
 
-                test_game = GameLogic()
-
-                test_banker = Banker()
-
-                dice_results = ','.join(map(str, test_game.roll_dice(6)))
-
-                print('1,2,3,2,3,4')
+                dice_results = ','.join(map(str, self.method_roller(6)))
+                print(dice_results)
 
                 dice_to_keep = input("Enter dice to keep (no spaces), or (q)uit: ")
-
-                dice_to_keep_tuple = tuple(dice_to_keep)
-
-                current_score = test_game.calculate_score(dice_to_keep_tuple)
-
-                test_banker.shelf(current_score)
-
+                
                 if dice_to_keep == 'q':
-                    print(f"Total score is {test_banker.shelved} points")
-                    print(f"Thanks for playing. You earned {current_score} points")
+                    print(f"Total score is {test_banker.balance} points")
+                    print(f"Thanks for playing. You earned {test_banker.balance} points")
                     break
+
                 else:
-                    pass
+                    dice_to_keep_tuple = tuple( int(num) for num in dice_to_keep )   
+                    current_score = test_game.calculate_score(dice_to_keep_tuple)
+                    test_banker.shelf(current_score)
+
+                    remaining_dice = 6-len(dice_to_keep_tuple)
+                    print (f'You have {current_score} unbanked points and {remaining_dice} dice remaining')
+                    roll_or_bank = input('(r)oll again, (b)ank your points or (q)uit ')
+                    if roll_or_bank == 'b':
+                        print(f'You banked {test_banker.bank()} points in round {counter}')
+                        print(f'Total score is {test_banker.balance} points')
+                    
+                    elif roll_or_bank == 'q':
+                        print(f"Total score is {test_banker.balance} points")
+                        print(f"Thanks for playing. You earned {test_banker.balance} points")
+                        break
+                    elif roll_or_bank == 'r':
+                        continue
 
 
 
@@ -126,6 +135,6 @@ class Banker:
         """
         self.shelved = 0
 
-
-test = Game()
-test.play()
+if __name__ == '__main__':
+    test = Game()
+    test.play()
