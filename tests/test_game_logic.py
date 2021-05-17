@@ -1,6 +1,7 @@
 import pytest
 from game_of_greed.game_logic import GameLogic
 
+
 def test_roll_dice_length():
     """
     A sequence of correct length is returned
@@ -18,3 +19,4 @@ def test_roll_dice_range():
     for num in result:
         if num > 6 or num < 1:
             assert False, 'roll_dice output must be between 1 and 6'
+
