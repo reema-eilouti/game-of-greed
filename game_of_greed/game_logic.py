@@ -141,6 +141,15 @@ class GameLogic():
         """
         return tuple(randint(1, 6) for _ in range(0, num_dice))
 
+
+    @staticmethod
+    def get_scorers(dice_roll:tuple) -> tuple:
+
+        return tuple(filter(lambda number : number == 1 or number == 5 , dice_roll))
+                
+
+
+
     @staticmethod
     def validate_keepers(roll , keeper):
         keeper_dict = Counter(keeper)

@@ -16,3 +16,6 @@ The game requires six standard dice and a pencil and paper for scoring. Each pla
 - **PR Link** [PR](https://github.com/reema-eilouti/game-of-greed/pull/3) 
 ### LAB 07:
 - **PR Link** [PR](https://github.com/reema-eilouti/game-of-greed/pull/5) 
+### LAB 08:
+- **PR Link** [PR](https://github.com/reema-eilouti/game-of-greed/pull/7) 
+
