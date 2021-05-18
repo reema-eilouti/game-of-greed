@@ -1,15 +1,20 @@
 from random import randint, sample
 from collections import Counter
 
+from _pytest.outcomes import skip
+
 class Game():
     def __init__(self, method_roller=None):
         self.method_roller = method_roller or GameLogic.roll_dice
 
-    def play(self):
+    def play(self,roller=None):
+        roller = roller or GameLogic.roll_dice
         counter = 0
+        skip_roll = False
 
         print("Welcome to Game of Greed")
-        play_answer = input("Wanna play?")
+        print("(y)es to play or (n)o to decline")
+        play_answer = input("> ")
         if play_answer == 'n':
             print("OK. Maybe another time")
         elif play_answer == 'y':
@@ -17,17 +22,22 @@ class Game():
 
             test_banker = Banker()
             while(True):
-                counter += 1
-                print(f"Starting round {counter}")
-                print("Rolling 6 dice...")
 
-                dice_results = ','.join(map(str, self.method_roller(6)))
-                print(dice_results)
+                if not skip_roll :
+                    counter += 1
+                    remaining_dice = 6
+                    print(f"Starting round {counter}")
+                
+                if remaining_dice == 0:
+                    remaining_dice = 6
 
-                dice_to_keep = input("Enter dice to keep (no spaces), or (q)uit: ")
+                print(f"Rolling {remaining_dice} dice...")
+                dice_results = ' '.join(map(str, roller(remaining_dice)))
+                print(f"*** {dice_results} ***")
+                print("Enter dice to keep, or (q)uit:")
+                dice_to_keep = input("> ")
                 
                 if dice_to_keep == 'q':
-                    print(f"Total score is {test_banker.balance} points")
                     print(f"Thanks for playing. You earned {test_banker.balance} points")
                     break
 
@@ -35,20 +45,21 @@ class Game():
                     dice_to_keep_tuple = tuple( int(num) for num in dice_to_keep )   
                     current_score = test_game.calculate_score(dice_to_keep_tuple)
                     test_banker.shelf(current_score)
-
-                    remaining_dice = 6-len(dice_to_keep_tuple)
-                    print (f'You have {current_score} unbanked points and {remaining_dice} dice remaining')
-                    roll_or_bank = input('(r)oll again, (b)ank your points or (q)uit ')
+                    
+                    remaining_dice = remaining_dice - len(dice_to_keep_tuple)
+                    print (f'You have {test_banker.shelved} unbanked points and {remaining_dice} dice remaining')
+                    print("(r)oll again, (b)ank your points or (q)uit:")
+                    roll_or_bank = input("> ")
                     if roll_or_bank == 'b':
+                        skip_roll = False
                         print(f'You banked {test_banker.bank()} points in round {counter}')
                         print(f'Total score is {test_banker.balance} points')
                     
                     elif roll_or_bank == 'q':
-                        print(f"Total score is {test_banker.balance} points")
                         print(f"Thanks for playing. You earned {test_banker.balance} points")
                         break
                     elif roll_or_bank == 'r':
-                        continue
+                        skip_roll = True
 
 
 
