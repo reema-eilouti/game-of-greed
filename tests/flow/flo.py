@@ -1,5 +1,5 @@
 import builtins
-from game_of_greed.game_logic import Game
+from game_of_greed.game import Game
 
 
 class Flo:
