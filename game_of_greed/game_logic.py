@@ -3,90 +3,6 @@ from collections import Counter
 
 from _pytest.outcomes import skip
 
-
-class Game():
-    def __init__(self, method_roller=None):
-        self.method_roller = method_roller or GameLogic.roll_dice
-
-    def play(self, roller=None):
-        roller = roller or GameLogic.roll_dice
-        counter = 0
-        skip_roll = False
-        cheater = False
-
-        print("Welcome to Game of Greed")
-        print("(y)es to play or (n)o to decline")
-        play_answer = input("> ")
-        if play_answer == 'n':
-            print("OK. Maybe another time")
-        elif play_answer == 'y':
-            test_game = GameLogic()
-
-            test_banker = Banker()
-            while(True):
-
-                if not skip_roll and not cheater:
-                    counter += 1
-                    remaining_dice = 6
-                    print(f"Starting round {counter}")
-
-                if remaining_dice == 0:
-                    remaining_dice = 6
-
-                if not cheater:
-                    print(f"Rolling {remaining_dice} dice...")
-                    dice_results_tuple = roller(remaining_dice)
-                    dice_results = ' '.join(map(str, dice_results_tuple))
-
-                zilcher = test_game.calculate_score(dice_results_tuple)
-                print(f"*** {dice_results} ***")
-                if zilcher == 0:
-                    print("""****************************************
-**        Zilch!!! Round over         **
-****************************************""")
-                    
-                    print(f'You banked 0 points in round {counter}')
-                    print(f'Total score is {test_banker.balance} points')
-                    skip_roll = False
-                    continue
-                
-                print("Enter dice to keep, or (q)uit:")
-                dice_to_keep = input("> ").replace(' ', '')
-
-                if dice_to_keep == 'q':
-                    print(
-                        f"Thanks for playing. You earned {test_banker.balance} points")
-                    break
-
-                else:
-                    dice_to_keep_tuple = tuple(int(num)for num in dice_to_keep)
-                    cheater = not test_game.validate_keepers(dice_results_tuple,dice_to_keep_tuple)
-                    if cheater :
-                        print('Cheater!!! Or possibly made a typo...')
-                        continue
-
-                    current_score = test_game.calculate_score(
-                        dice_to_keep_tuple)
-                    test_banker.shelf(current_score)
-
-                    remaining_dice = remaining_dice - len(dice_to_keep_tuple)
-                    print(
-                        f'You have {test_banker.shelved} unbanked points and {remaining_dice} dice remaining')
-                    print("(r)oll again, (b)ank your points or (q)uit:")
-                    roll_or_bank = input("> ")
-                    if roll_or_bank == 'b':
-                        skip_roll = False
-                        print(f'You banked {test_banker.bank()} points in round {counter}')
-                        print(f'Total score is {test_banker.balance} points')
-
-                    elif roll_or_bank == 'q':
-                        print(
-                            f"Thanks for playing. You earned {test_banker.balance} points")
-                        break
-                    elif roll_or_bank == 'r':
-                        skip_roll = True
-
-
 class GameLogic():
     def __init__(self):
         pass
@@ -145,7 +61,31 @@ class GameLogic():
     @staticmethod
     def get_scorers(dice_roll:tuple) -> tuple:
 
-        return tuple(filter(lambda number : number == 1 or number == 5 , dice_roll))
+        dice_roll_dict = Counter(dice_roll)
+
+        results = []
+        counter = 0
+        
+        for i in range(1, 7):
+            if dice_roll_dict[i] == 1:
+                counter += 1
+            if dice_roll_dict[i] == 2:
+                counter += 3
+
+        if counter == 6 or counter == 9:
+            # Striaght or 3 pairs
+            return dice_roll
+
+        for key in dice_roll_dict:
+            if key == 1 or key == 5:
+                for i in range(dice_roll_dict[key]):
+                    results.append(key)
+
+            elif dice_roll_dict[key] >= 3:
+                for i in range(dice_roll_dict[key]):
+                    results.append(key)
+        
+        return tuple(results)
                 
 
 
@@ -191,6 +131,4 @@ class Banker:
         self.shelved = 0
 
 
-if __name__ == '__main__':
-    test = Game()
-    test.play()
+
